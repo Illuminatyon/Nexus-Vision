@@ -171,3 +171,5 @@ For better facial expression recognition:
 - [OpenCV Documentation](https://docs.opencv.org/)
 - [Computer Vision Techniques](https://opencv.org/)
 
+
+Note : Pour certains qui se demanderaient pourquoi est-ce que je n'ai pas de commits, j'ai supprimé l'historique afin d'y remettre de l'ordre 😉
