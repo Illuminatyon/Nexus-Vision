@@ -98,7 +98,16 @@ class FingerCounter:
         return extended_fingers
 
     def calculate_distance(self, point1, point2):
-        """Calculate Euclidean distance between two points."""
+        """
+        Calculate Euclidean distance between two points in 2D space.
+
+        Args:
+            point1: First point with x and y coordinates
+            point2: Second point with x and y coordinates
+
+        Returns:
+            float: Euclidean distance between the two points
+        """
         return math.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
 
     def draw_finger_status(self, frame, hand_landmarks, extended_fingers, is_left):

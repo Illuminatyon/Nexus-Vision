@@ -79,7 +79,28 @@ class Application:
         print("=======================================\n")
 
     def run(self):
-        """Run the application."""
+        """
+        Run the main application loop for hand gesture and facial expression recognition.
+
+        This method:
+        1. Captures video frames from the webcam
+        2. Processes each frame to detect hands and faces
+        3. Analyzes hand landmarks to count extended fingers
+        4. Analyzes facial landmarks to detect expressions
+        5. Displays the results with visual feedback
+        6. Continues until the user presses 'q' to quit
+
+        The application displays:
+        - Hand landmarks with different colors for left and right hands
+        - Extended finger counts for each hand
+        - Total sum of extended fingers from both hands
+        - Detected facial expression with confidence score
+        - FPS (frames per second) counter
+        - Information panel with instructions
+
+        Returns:
+            None
+        """
         # Print instructions
         self.print_instructions()
 

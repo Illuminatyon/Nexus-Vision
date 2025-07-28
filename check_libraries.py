@@ -18,7 +18,23 @@ required_libraries = [
 ]
 
 def check_library(library):
-    """Check if a library is installed and get its version."""
+    """
+    Check if a library is installed and get its version.
+
+    Args:
+        library (dict): Dictionary containing library information with keys:
+            - import_name: The name used to import the library
+            - name: The name of the library as used in pip
+            - min_version: The minimum required version of the library
+
+    Returns:
+        tuple: A tuple containing:
+            - bool: True if the library is installed, False otherwise
+            - str or None: The version of the library if installed, error message if exception occurred, or None if not found
+
+    Raises:
+        No exceptions are raised as they are caught and returned as part of the result
+    """
     try:
         # Check if the library is installed
         spec = importlib.util.find_spec(library["import_name"])
@@ -34,6 +50,18 @@ def check_library(library):
         return False, str(e)
 
 def main():
+    """
+    Main function to check if all required libraries for the application are installed.
+
+    This function:
+    1. Displays system information (Python version, OS)
+    2. Checks each required library and displays its installation status
+    3. Provides a summary of the check results
+    4. Offers troubleshooting tips for common issues
+
+    Returns:
+        None
+    """
     print("\n=== Library Check for Reconnaissance Vidéo Python v1 ===\n")
 
     # Print Python version
