@@ -7,10 +7,10 @@ import cv2
 import numpy as np
 import sys
 
-from face_detector import FaceExpressionDetector
-from hand_detector import HandDetector
-from finger_counter import FingerCounter
-from video_processor import VideoProcessor
+from detectors.face_detector import FaceExpressionDetector
+from detectors.hand_detector import HandDetector
+from detectors.finger_counter import FingerCounter
+from utils.video_processor import VideoProcessor
 
 
 class Application:
@@ -41,8 +41,8 @@ class Application:
 
     def print_instructions(self):
         """Print instructions for hand gestures and facial expressions to the console."""
-        print("\n=== Video Recognition Python v1 ===")
-        print("This program recognizes hand gestures and facial expressions.")
+        print("\n=== NEXUS VISION ===")
+        print("Advanced hand gesture recognition and facial expression analysis system.")
         print("")
         print("HAND GESTURE RECOGNITION:")
         print("Show your hands to the camera to count extended fingers:")
@@ -154,7 +154,7 @@ class Application:
             combined_frame = np.hstack((frame, info_panel))
 
             # Show the combined frame
-            cv2.imshow('Reconnaissance Video Python v1', combined_frame)
+            cv2.imshow('NEXUS VISION', combined_frame)
 
             # Check for key press
             key = cv2.waitKey(1) & 0xFF

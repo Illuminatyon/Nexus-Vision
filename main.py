@@ -1,6 +1,6 @@
 """
-Reconnaissance Vidéo Python v1
-Hand gesture recognition and finger counting application using OpenCV and MediaPipe.
+NEXUS VISION
+Advanced hand gesture recognition and facial expression analysis system.
 
 This program uses your webcam to detect hands and count extended fingers.
 It can detect both hands simultaneously and calculate the total sum of extended fingers.
