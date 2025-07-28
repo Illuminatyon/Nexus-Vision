@@ -163,9 +163,9 @@ class FaceExpressionDetector:
             # Draw mouth rectangle with color based on openness
             mouth_rect_color = (0, 165, 255) if is_mouth_open else (0, 255, 0)  # Orange if open, green if not
 
-            # Draw mouth rectangle
-            cv2.line(frame, mouth_left, mouth_right, mouth_rect_color, 2)
-            cv2.line(frame, mouth_top, mouth_bottom, mouth_rect_color, 2)
+            # Draw mouth rectangle (hidden as per requirements)
+            # cv2.line(frame, mouth_left, mouth_right, mouth_rect_color, 2)
+            # cv2.line(frame, mouth_top, mouth_bottom, mouth_rect_color, 2)
             cv2.circle(frame, mouth_left, 5, (0, 0, 255), -1)
             cv2.circle(frame, mouth_right, 5, (0, 0, 255), -1)
             cv2.circle(frame, mouth_top, 5, (0, 0, 255), -1)
@@ -185,9 +185,9 @@ class FaceExpressionDetector:
             # Draw lip midpoint
             cv2.circle(frame, lip_midpoint, 5, (255, 255, 0), -1)
 
-            # Draw lines from midpoint to corners to show corner elevation
-            cv2.line(frame, lip_midpoint, mouth_left, (255, 0, 255), 2)
-            cv2.line(frame, lip_midpoint, mouth_right, (255, 0, 255), 2)
+            # Draw lines from midpoint to corners to show corner elevation (hidden as per requirements)
+            # cv2.line(frame, lip_midpoint, mouth_left, (255, 0, 255), 2)
+            # cv2.line(frame, lip_midpoint, mouth_right, (255, 0, 255), 2)
 
             # Draw eye landmarks
             left_eye_top = points['left_eye'][3]
@@ -243,9 +243,9 @@ class FaceExpressionDetector:
             # Set color based on eyebrow elevation
             eyebrow_line_color = (0, 165, 255) if eyebrows_raised_enough else (255, 0, 0)  # Orange if raised enough, blue if not
 
-            # Draw eyebrow elevation lines with appropriate color
-            cv2.line(frame, (left_eyebrow_x, left_eyebrow_y), (left_eye_x, left_eye_y), eyebrow_line_color, 2)
-            cv2.line(frame, (right_eyebrow_x, right_eyebrow_y), (right_eye_x, right_eye_y), eyebrow_line_color, 2)
+            # Draw eyebrow elevation lines with appropriate color (hidden as per requirements)
+            # cv2.line(frame, (left_eyebrow_x, left_eyebrow_y), (left_eye_x, left_eye_y), eyebrow_line_color, 2)
+            # cv2.line(frame, (right_eyebrow_x, right_eyebrow_y), (right_eye_x, right_eye_y), eyebrow_line_color, 2)
 
             # Add eye and eyebrow measurements
             cv2.putText(frame, f"Eyes open: {eyes_open_enough}", (10, 340), 
@@ -446,7 +446,7 @@ class FaceExpressionDetector:
 
         return expression, confidence
 
-    def draw_expression(self, frame, expression, confidence):
+    def draw_expression(self, frame, expression, confidence, face_landmarks=None):
         """
         Draw the detected expression on the frame.
 
@@ -454,6 +454,7 @@ class FaceExpressionDetector:
             frame: BGR image frame
             expression: Detected facial expression
             confidence: Confidence score for the detected expression
+            face_landmarks: MediaPipe face landmarks (optional)
 
         Returns:
             frame: Frame with expression information drawn
@@ -467,36 +468,56 @@ class FaceExpressionDetector:
 
         color = colors.get(expression, (255, 255, 255))  # Default to white
 
-        # Draw expression text with a more subtle font
-        cv2.putText(frame, f"Expression: {expression.capitalize()}", (10, 160), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 1)
+        # If face landmarks are provided, position the text above the head
+        if face_landmarks:
+            h, w = frame.shape[:2]
+            landmarks = face_landmarks.landmark
 
-        # Draw confidence bar
-        bar_length = 180
-        bar_height = 25
-        filled_length = int(bar_length * confidence)
+            # Find the top of the head (minimum y value of all landmarks)
+            min_y = min(landmark.y for landmark in landmarks)
 
-        # Draw empty bar
-        cv2.rectangle(frame, (10, 190), (10 + bar_length, 190 + bar_height), (100, 100, 100), -1)
-        # Draw filled portion
-        cv2.rectangle(frame, (10, 190), (10 + filled_length, 190 + bar_height), color, -1)
-        # Draw border
-        cv2.rectangle(frame, (10, 190), (10 + bar_length, 190 + bar_height), (200, 200, 200), 2)
+            # Find the center x position of the face
+            face_x_coords = [landmark.x for landmark in landmarks]
+            center_x = int((min(face_x_coords) + max(face_x_coords)) / 2 * w)
 
-        # Add confidence percentage
-        cv2.putText(frame, f"{int(confidence * 100)}%", (10 + bar_length + 5, 190 + 15), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            # Position for the text (above the head)
+            text_x = max(10, center_x - 100)  # Ensure it's not too far left
+            text_y = max(30, int(min_y * h) - 10)  # Ensure it's not too high
 
-        # Add expression guidance based on detected expression
-        guidance_y = 230
-        if expression == "neutral":
-            cv2.putText(frame, "Try smiling or raising eyebrows!", (10, guidance_y), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        elif expression == "smile" and confidence < 0.7:
-            cv2.putText(frame, "Smile more widely for better detection", (10, guidance_y), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        elif expression == "surprise" and confidence < 0.7:
-            cv2.putText(frame, "Raise eyebrows more for better detection", (10, guidance_y), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            # Draw expression text with a more subtle font
+            cv2.putText(frame, f"{expression.capitalize()} ({int(confidence * 100)}%)", 
+                       (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+        else:
+            # Fallback to fixed position if no landmarks are provided
+            cv2.putText(frame, f"Expression: {expression.capitalize()}", (10, 160), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 1)
+
+            # Draw confidence bar
+            bar_length = 180
+            bar_height = 25
+            filled_length = int(bar_length * confidence)
+
+            # Draw empty bar
+            cv2.rectangle(frame, (10, 190), (10 + bar_length, 190 + bar_height), (100, 100, 100), -1)
+            # Draw filled portion
+            cv2.rectangle(frame, (10, 190), (10 + filled_length, 190 + bar_height), color, -1)
+            # Draw border
+            cv2.rectangle(frame, (10, 190), (10 + bar_length, 190 + bar_height), (200, 200, 200), 2)
+
+            # Add confidence percentage
+            cv2.putText(frame, f"{int(confidence * 100)}%", (10 + bar_length + 5, 190 + 15), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+
+            # Add expression guidance based on detected expression
+            guidance_y = 230
+            if expression == "neutral":
+                cv2.putText(frame, "Try smiling or raising eyebrows!", (10, guidance_y), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            elif expression == "smile" and confidence < 0.7:
+                cv2.putText(frame, "Smile more widely for better detection", (10, guidance_y), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            elif expression == "surprise" and confidence < 0.7:
+                cv2.putText(frame, "Raise eyebrows more for better detection", (10, guidance_y), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
         return frame

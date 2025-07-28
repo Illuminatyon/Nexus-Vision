@@ -116,7 +116,7 @@ class Application:
                     expression, confidence = self.face_detector.detect_expression(face_landmarks, frame.shape)
 
                     # Draw expression information
-                    frame = self.face_detector.draw_expression(frame, expression, confidence)
+                    frame = self.face_detector.draw_expression(frame, expression, confidence, face_landmarks)
 
             # Draw hand landmarks and count fingers
             if hand_results.multi_hand_landmarks:
